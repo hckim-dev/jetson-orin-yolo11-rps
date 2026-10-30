@@ -1,7 +1,7 @@
 """
 core/trt_engine.py
 - TensorRT 10.x 기반 고성능 GPU 비동기 추론 래퍼.
-- Host/Device 메모리 사전 할당(Zero-Allocation) 및 CudaStream 비동기 전송 파이프라인 구현.
+- Host/Device 입출력 버퍼 사전 할당 및 CUDA Stream 기반 전송·추론 구현.
 """
 
 from pathlib import Path
@@ -34,7 +34,7 @@ class TRTEngine:
             return self.runtime.deserialize_cuda_engine(f.read())
 
     def _allocate_buffers(self) -> None:
-        """Host/Device 고정 버퍼 사전 할당 및 텐서 주소 바인딩 (Zero-Allocation Loop)"""
+        """Host/Device 입출력 버퍼 사전 할당 및 텐서 주소 바인딩"""
         self.input_name = self.engine.get_tensor_name(0)
         self.output_name = self.engine.get_tensor_name(1)
 

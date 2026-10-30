@@ -38,8 +38,8 @@ class GamePlayConfig:
 
     countdown_seconds: float = 3.0
     result_display_seconds: float = 2.5
-    voting_window_frames: int = 10  # 다수결 판정 시 수집할 프레임 수
-    target_score: int = 3  # 세트 승리 점수 (5판 3선승제 등)
+    voting_window_frames: int = 10  # 최빈값 판정 시 수집할 프레임 수
+    target_score: int = 3  # 먼저 3승한 플레이어 승리 (무승부·무효 라운드 포함 횟수 제한 없음)
 
 
 @dataclass(frozen=True, slots=True)

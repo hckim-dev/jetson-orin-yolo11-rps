@@ -45,7 +45,9 @@ class GameUIRenderer:
     ) -> None:
         self.countdown_sec = countdown_sec
         self.assets_dir = (
-            Path(assets_dir) if assets_dir else Path(__file__).parent.parent / "assets"
+            Path(assets_dir)
+            if assets_dir
+            else Path(__file__).resolve().parent.parent / "docs" / "assets"
         )
         self.icons: dict[Gesture, np.ndarray | None] = self._load_icons()
 

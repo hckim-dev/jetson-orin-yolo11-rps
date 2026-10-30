@@ -17,7 +17,7 @@ class BaseGameMode(ABC):
 
     def __init__(self, config: GamePlayConfig) -> None:
         self.config = config
-        self.state_machine = GameStateMachine(config)
+        self.state_machine = GameStateMachine(config, on_round_start=self._on_round_start)
 
     @property
     def context(self) -> GameContext:
@@ -25,6 +25,10 @@ class BaseGameMode(ABC):
 
     def start_round(self) -> None:
         self.state_machine.start_round()
+
+    def _on_round_start(self) -> None:
+        """수동·자동 라운드 시작 시 실행하는 모드별 준비 작업."""
+        pass
 
     def reset_match(self) -> None:
         self.state_machine.reset_match()

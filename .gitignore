@@ -3,6 +3,12 @@ venv/
 .venv/
 __pycache__/
 *.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
 
 # 딥러닝 모델 가중치 및 엔진 (업로드 방지)
 *.pt
@@ -21,16 +27,21 @@ runs/
 *.jpg
 *.png
 
-# assets 디렉터리 내 리소스는 추적 허용
-!assets/*.png
-!assets/**/*.png
-!assets/*.jpg
-!assets/**/*.jpg
+# UI 리소스 및 포트폴리오 문서용 이미지 추적 허용
+!docs/assets/**/*.png
+!docs/assets/**/*.jpg
 
 # 빌드 및 IDE 설정
 build/
 .vscode/
 .idea/
+
+# 실행 로그 및 OS 메타데이터
+*.log
+.DS_Store
+Thumbs.db
+Desktop.ini
+
 # Local credentials and signing material (templates remain tracked).
 .env
 .env.*

@@ -1,12 +1,13 @@
 """
 game/state_machine.py
 - 게임 수명 주기(IDLE -> COUNTDOWN -> JUDGING -> ROUND_RESULT -> MATCH_OVER) 상태 머신.
-- 단일 프레임 오인식을 방지하기 위한 롤링 윈도우 기반 다수결(Majority Voting) 판정 알고리즘 탑재.
+- 판정 구간의 여러 프레임에서 유효 제스처의 최빈값을 선택.
 """
 
 import time
 from collections import Counter, deque
 from dataclasses import dataclass, field
+from typing import Callable
 
 from configs.app_config import GamePlayConfig
 
@@ -29,7 +30,7 @@ class GameContext:
     p2_final_gesture: Gesture = Gesture.NONE
     last_result: GameResult = GameResult.INVALID
 
-    # 다수결 판정용 롤링 윈도우 버퍼
+    # 판정 구간의 프레임 수집 버퍼
     p1_vote_buffer: deque[Gesture] = field(default_factory=deque)
     p2_vote_buffer: deque[Gesture] = field(default_factory=deque)
 
@@ -37,8 +38,11 @@ class GameContext:
 class GameStateMachine:
     """가위바위보 상태 전이 및 윈도우 다수결 판정 관리 클래스"""
 
-    def __init__(self, config: GamePlayConfig) -> None:
+    def __init__(
+        self, config: GamePlayConfig, on_round_start: Callable[[], None] | None = None
+    ) -> None:
         self.config = config
+        self._on_round_start = on_round_start
         self.context = GameContext(
             p1_vote_buffer=deque(maxlen=config.voting_window_frames),
             p2_vote_buffer=deque(maxlen=config.voting_window_frames),
@@ -59,6 +63,13 @@ class GameStateMachine:
 
     def start_round(self) -> None:
         """새 라운드(카운트다운) 진입"""
+        if (
+            self.context.p1_score >= self.config.target_score
+            or self.context.p2_score >= self.config.target_score
+        ):
+            self.context.state = GameState.MATCH_OVER
+            return
+
         self.context.state = GameState.COUNTDOWN
         self.context.state_timer = time.time()
         self.context.p1_final_gesture = Gesture.NONE
@@ -66,6 +77,9 @@ class GameStateMachine:
         self.context.last_result = GameResult.INVALID
         self.context.p1_vote_buffer.clear()
         self.context.p2_vote_buffer.clear()
+
+        if self._on_round_start is not None:
+            self._on_round_start()
 
     @staticmethod
     def _get_majority_gesture(buffer: deque[Gesture]) -> Gesture:

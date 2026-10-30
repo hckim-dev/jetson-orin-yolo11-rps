@@ -21,8 +21,8 @@ class PvEMode(BaseGameMode):
         self.god_mode = god_mode
         self._pc_fixed_gesture: Gesture = Gesture.NONE
 
-    def start_round(self) -> None:
-        super().start_round()
+    def _on_round_start(self) -> None:
+        """수동·자동 라운드 시작마다 일반 모드의 PC 패를 새로 선택."""
         if not self.god_mode:
             self._pc_fixed_gesture = random.choice(
                 [Gesture.ROCK, Gesture.PAPER, Gesture.SCISSORS]
